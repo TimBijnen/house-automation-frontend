@@ -7,13 +7,13 @@ export default function Home() {
 
   useEffect( () => {
     async function fetchData() {
-      const data = await fetch( "http://localhost:3001/lighting" ).then(response => response.json());
+      const data = await fetch( "http://www.bezigebijnen.nl/api/lighting" ).then(response => response.json());
       setGardenLights( data );
     }
     fetchData();
   }, [] );
   const activate = async ( key, value ) => {
-    const result = await fetch( "http://localhost:3001/lighting", { headers: { "Content-Type": "application/json" }, method: "POST", body: JSON.stringify( { [key]: value }) }).then(response => response.json());
+    const result = await fetch( "http://www.bezigebijnen.nl/api/lighting", { headers: { "Content-Type": "application/json" }, method: "POST", body: JSON.stringify( { [key]: value }) }).then(response => response.json());
     console.log(result);
     setGardenLights( { ...gardenLights, ...result } );
   }
