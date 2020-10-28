@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import { useEffect, useState } from "react";
 import fetch from "cross-fetch";
+import Button from "../components/Button";
 
 export default function Home() {
   const { NEXT_PUBLIC_API_ENDPOINT: baseUrl } = process.env;
@@ -49,14 +50,14 @@ export default function Home() {
         <h1 className="title">
           Huize Bijnen
         </h1>
-        <button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
+        <Button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
           Alles { isAllDeactivated ? "inschakelen" : "uitschakelen" }
-        </button>
+        </Button>
         <div className="button-group">
           { pins.map( pin => (
-              <button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
+              <Button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
                 { pin.name } { pin.isActive ? "uitschakelen" : "inschakelen" }
-              </button>
+              </Button>
             ) )
           }
         </div>
@@ -69,14 +70,6 @@ export default function Home() {
         .button-group {
           display: grid;
           grid-template-columns: 1fr 1fr;
-        }
-        button {
-          height: 60px;
-          background-color: red;
-        }
-        button.active {
-          background-color: green;
-          color: white;
         }
       `}</style>
 
