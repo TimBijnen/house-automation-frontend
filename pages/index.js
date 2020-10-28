@@ -3,25 +3,45 @@ import { useEffect, useState } from "react";
 import fetch from "cross-fetch";
 
 export default function Home() {
-  const [ gardenLights, setGardenLights ] = useState( {} );
+  const { NEXT_PUBLIC_API_ENDPOINT: baseUrl } = process.env;
+  const [ pins, setPins ] = useState( [] );
 
   useEffect( () => {
     async function fetchData() {
-      const data = await fetch( "http://www.bezigebijnen.nl/api/lighting" ).then(response => response.json());
-      setGardenLights( data );
+      const { data } = await fetch( `${ baseUrl }/rpi/` ).then(response => response.json());
+      setPins( data.pins );
     }
     fetchData();
   }, [] );
-  const activate = async ( key, value ) => {
-    const result = await fetch( "http://www.bezigebijnen.nl/api/lighting", { headers: { "Content-Type": "application/json" }, method: "POST", body: JSON.stringify( { [key]: value }) }).then(response => response.json());
-    console.log(result);
-    setGardenLights( { ...gardenLights, ...result } );
+  const toggle = async ( pin ) => {
+    const { data } = await fetch(
+      `${ baseUrl }/rpi/${ pin.number }`,
+      {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify( { isActive: !pin.isActive } )
+      }
+    ).then(response => response.json());
+    setPins( data.pins )
   }
+  const toggleAll = async ( isActive ) => {
+    const { data } = await fetch(
+      `${ baseUrl }/rpi`,
+      {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify( { isActive } )
+      }
+    ).then(response => response.json());
+    setPins( data.pins )
+  }
+
+  const isAllDeactivated = pins.filter( ( { isActive } ) => isActive ).length === 0;
 
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
+        <title>Huize Bijnen</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -29,14 +49,16 @@ export default function Home() {
         <h1 className="title">
           Huize Bijnen
         </h1>
+        <button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
+          Alles { isAllDeactivated ? "inschakelen" : "uitschakelen" }
+        </button>
         <div className="button-group">
-          <button onClick={ () => activate( "gardenLightsBack", !gardenLights.gardenLightsBack ) }>
-            Tuinlampen achter { gardenLights.gardenLightsBack ? "uitschakelen" : "inschakelen" }
-
-          </button>
-          <button onClick={ () => activate( "gardenLightsFront", !gardenLights.gardenLightsFront ) }>
-            Tuinlampen voor { gardenLights.gardenLightsFront ? "uitschakelen" : "inschakelen" }
-          </button>
+          { pins.map( pin => (
+              <button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
+                { pin.name } { pin.isActive ? "uitschakelen" : "inschakelen" }
+              </button>
+            ) )
+          }
         </div>
       </main>
       <footer>
@@ -46,10 +68,15 @@ export default function Home() {
       <style jsx>{`
         .button-group {
           display: grid;
-          grid-template-rows: 1fr 1fr;
+          grid-template-columns: 1fr 1fr;
         }
         button {
           height: 60px;
+          background-color: red;
+        }
+        button.active {
+          background-color: green;
+          color: white;
         }
       `}</style>
 
