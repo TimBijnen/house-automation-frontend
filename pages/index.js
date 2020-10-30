@@ -1,40 +1,33 @@
 import Head from 'next/head'
 import { useEffect, useState } from "react";
-import fetch from "cross-fetch";
 import Button from "../components/Button";
+import Error from "../components/Error";
+import Loader from "../components/Loader";
+import RaspberryApi from "../api/raspberry";
 
 export default function Home() {
-  const { NEXT_PUBLIC_API_ENDPOINT: baseUrl } = process.env;
   const [ pins, setPins ] = useState( [] );
+  const [ error, setError ] = useState("");
+  const [ loading, setLoading ] = useState( true );
 
   useEffect( () => {
     async function fetchData() {
-      const { data } = await fetch( `${ baseUrl }/rpi/` ).then(response => response.json());
+      const { data, error: e } = await RaspberryApi.getRpi();
+      setLoading( false );
+      setError( e );
       setPins( data.pins );
     }
     fetchData();
   }, [] );
+  
   const toggle = async ( pin ) => {
-    const { data } = await fetch(
-      `${ baseUrl }/rpi/${ pin.number }`,
-      {
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        body: JSON.stringify( { isActive: !pin.isActive } )
-      }
-    ).then(response => response.json());
+    const { data } = await RaspberryApi.togglePin(pin);
     setPins( data.pins )
   }
+
   const toggleAll = async ( isActive ) => {
-    const { data } = await fetch(
-      `${ baseUrl }/rpi`,
-      {
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        body: JSON.stringify( { isActive } )
-      }
-    ).then(response => response.json());
-    setPins( data.pins )
+    const { data } = await RaspberryApi.toggleAll( isActive );
+    setPins( data.pins );
   }
 
   const isAllDeactivated = pins.filter( ( { isActive } ) => isActive ).length === 0;
@@ -42,25 +35,31 @@ export default function Home() {
   return (
     <div className="container">
       <Head>
-        <title>Huize Bijnen</title>
+        <title>Lampi</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
         <h1 className="title">
-          Huize Bijnen
+          Lampi
         </h1>
-        <Button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
-          Alles { isAllDeactivated ? "inschakelen" : "uitschakelen" }
-        </Button>
-        <div className="button-group">
-          { pins.map( pin => (
-              <Button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
-                { pin.name } { pin.isActive ? "uitschakelen" : "inschakelen" }
-              </Button>
-            ) )
-          }
-        </div>
+        <Error error={ error } />
+        <Loader isShowing={ loading } />
+        { !error && pins.length > 0 && (
+          <React.Fragment>
+            <Button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
+              Alles { isAllDeactivated ? "inschakelen" : "uitschakelen" }
+            </Button>
+            <div className="button-group">
+              { pins.map( pin => (
+                  <Button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
+                    { pin.name } { pin.isActive ? "uitschakelen" : "inschakelen" }
+                  </Button>
+                ) )
+              }
+            </div>
+          </React.Fragment>
+        ) }
       </main>
       <footer>
         
@@ -83,9 +82,6 @@ export default function Home() {
             sans-serif;
         }
 
-        * {
-          box-sizing: border-box;
-        }
       `}</style>
     </div>
   )
