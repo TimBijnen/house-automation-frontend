@@ -1,16 +1,19 @@
-import Head from 'next/head'
 import { useEffect, useState } from "react";
+import Head from 'next/head'
+import socketIOClient from "socket.io-client";
 import Section from "../components/Section";
 import Error from "../components/Error";
 import Loader from "../components/Loader";
-import TestSocket from "../components/TestSocket";
 import RaspberryApi from "../api/raspberry";
+
+const ENDPOINT = "http://127.0.0.1:3002";
 
 export default function Home() {
   const [ pins, setPins ] = useState( [] );
   const [ error, setError ] = useState("");
   const [ loading, setLoading ] = useState( true );
 
+  
   useEffect( () => {
     async function fetchData() {
       const { data, error: e } = await RaspberryApi.getRpi();
@@ -20,6 +23,11 @@ export default function Home() {
     }
     fetchData();
   }, [] );
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.on("updatePins", data => setPins(data.pins));
+  }, []);
   
   const toggle = async ( pin ) => {
     const { data } = await RaspberryApi.togglePin(pin);
@@ -47,7 +55,6 @@ export default function Home() {
         { !error && pins.length > 0 && (
           <Section title="TEST" pins={ pins } toggle={ toggle } toggleAll={ toggleAll } />
         ) }
-        <TestSocket />
       </main>
       <footer>
         
