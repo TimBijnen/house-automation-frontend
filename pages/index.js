@@ -6,7 +6,8 @@ import Error from "../components/Error";
 import Loader from "../components/Loader";
 import RaspberryApi from "../api/raspberry";
 
-const ENDPOINT = "http://127.0.0.1:3002";
+const { NEXT_PUBLIC_API_ENDPOINT } = process.env;
+const ENDPOINT = `${NEXT_PUBLIC_API_ENDPOINT}/socket`;
 
 export default function Home() {
   const [ pins, setPins ] = useState( [] );
