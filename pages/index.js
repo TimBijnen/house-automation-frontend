@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Section from "../components/Section";
 import Error from "../components/Error";
 import Loader from "../components/Loader";
+import TestSocket from "../components/TestSocket";
 import RaspberryApi from "../api/raspberry";
 
 export default function Home() {
@@ -46,6 +47,7 @@ export default function Home() {
         { !error && pins.length > 0 && (
           <Section title="TEST" pins={ pins } toggle={ toggle } toggleAll={ toggleAll } />
         ) }
+        <TestSocket />
       </main>
       <footer>
         
