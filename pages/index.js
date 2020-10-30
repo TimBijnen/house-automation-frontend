@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useEffect, useState } from "react";
-import Button from "../components/Button";
+import Section from "../components/Section";
 import Error from "../components/Error";
 import Loader from "../components/Loader";
 import RaspberryApi from "../api/raspberry";
@@ -30,8 +30,6 @@ export default function Home() {
     setPins( data.pins );
   }
 
-  const isAllDeactivated = pins.filter( ( { isActive } ) => isActive ).length === 0;
-
   return (
     <div className="container">
       <Head>
@@ -46,31 +44,12 @@ export default function Home() {
         <Error error={ error } />
         <Loader isShowing={ loading } />
         { !error && pins.length > 0 && (
-          <React.Fragment>
-            <Button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
-              Alles { isAllDeactivated ? "inschakelen" : "uitschakelen" }
-            </Button>
-            <div className="button-group">
-              { pins.map( pin => (
-                  <Button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
-                    { pin.name } { pin.isActive ? "uitschakelen" : "inschakelen" }
-                  </Button>
-                ) )
-              }
-            </div>
-          </React.Fragment>
+          <Section title="TEST" pins={ pins } toggle={ toggle } toggleAll={ toggleAll } />
         ) }
       </main>
       <footer>
         
       </footer>
-
-      <style jsx>{`
-        .button-group {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-      `}</style>
 
       <style jsx global>{`
         html,

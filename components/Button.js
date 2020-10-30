@@ -8,8 +8,8 @@ const Button = ( { children, ...props } ) => (
 
         <style jsx>{`
         button {
-            height: 60px;
-            background-color: red;
+            height: 90px;
+            // background-color: red;
         }
         button.active {
             background-color: green;

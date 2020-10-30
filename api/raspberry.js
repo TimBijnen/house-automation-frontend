@@ -1,6 +1,6 @@
 const { NEXT_PUBLIC_API_ENDPOINT } = process.env;
 
-const fetcher = (url) => fetch(url).then((res) => res.json()).catch(error => ({error}));
+const fetcher = (url, options) => fetch(url, options).then((res) => res.json()).catch(error => ({error}));
 
 const getRpi = () => fetcher(`${ NEXT_PUBLIC_API_ENDPOINT }/rpi/`)
 
