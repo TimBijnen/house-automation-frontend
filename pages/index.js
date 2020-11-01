@@ -7,12 +7,14 @@ import Loader from "../components/Loader";
 import RaspberryApi from "../api/raspberry";
 
 const { NEXT_PUBLIC_API_ENDPOINT } = process.env;
-const ENDPOINT = `${NEXT_PUBLIC_API_ENDPOINT}/socket`;
+// const ENDPOINT = `${NEXT_PUBLIC_API_ENDPOINT}`;
+const ENDPOINT = `http://localhost:3002`;
 
 export default function Home() {
   const [ pins, setPins ] = useState( [] );
   const [ error, setError ] = useState("");
   const [ loading, setLoading ] = useState( true );
+  const socket = socketIOClient(ENDPOINT);
 
   
   useEffect( () => {
@@ -22,22 +24,20 @@ export default function Home() {
       setError( e );
       setPins( data.pins );
     }
+    socket.on("update", () => fetchData());
     fetchData();
   }, [] );
-
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("updatePins", data => setPins(data.pins));
-  }, []);
   
   const toggle = async ( pin ) => {
     const { data } = await RaspberryApi.togglePin(pin);
-    setPins( data.pins )
+    // setPins( data.pins );
+    socket.emit("update");
   }
-
+  
   const toggleAll = async ( isActive ) => {
     const { data } = await RaspberryApi.toggleAll( isActive );
-    setPins( data.pins );
+    // setPins( data.pins );
+    socket.emit("update");
   }
 
   return (

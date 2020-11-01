@@ -9,7 +9,9 @@ const Button = ( { children, ...props } ) => (
         <style jsx>{`
         button {
             height: 90px;
-            // background-color: red;
+            background-color: white;
+            border: 1px solid;
+            margin-right: 20px;
         }
         button.active {
             background-color: green;

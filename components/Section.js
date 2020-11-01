@@ -1,5 +1,7 @@
 import React from "react";
 import Button from "./Button";
+import PowerIcon from '@material-ui/icons/Power';
+import PowerOffIcon from '@material-ui/icons/PowerOff';
 
 const Section = ( { title, pins, toggle, toggleAll } ) => {
     const isAllDeactivated = pins.filter( ( { isActive } ) => isActive ).length === 0;
@@ -11,7 +13,7 @@ const Section = ( { title, pins, toggle, toggleAll } ) => {
                     { title }
                 </h1>
                 <Button className={ !isAllDeactivated && "active" } onClick={ () => toggleAll( isAllDeactivated) }>
-                    Alles { isAllDeactivated ? "inschakelen" : "uitschakelen" }
+                    { isAllDeactivated ? <PowerIcon /> : <PowerOffIcon /> }
                 </Button>
             </div>
             <div className="section-buttons">
