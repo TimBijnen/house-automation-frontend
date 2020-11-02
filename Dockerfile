@@ -4,9 +4,10 @@ WORKDIR /usr/src
 
 COPY package*.json ./
 COPY . /usr/src
-RUN npm install
-RUN npm run build
+RUN yarn install
+# RUN npm install --unsafe-perm
+RUN yarn build
 
 
 EXPOSE 3000
-CMD [ "npm", "start" ]	
+CMD [ "yarn", "start" ]	
