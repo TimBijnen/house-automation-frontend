@@ -1,11 +1,11 @@
 FROM node:12
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src
 
 COPY package*.json ./
-RUN npm ci --only=production
+COPY . /usr/src
+RUN npm install
 RUN npm run build
-COPY . .
 
 
 EXPOSE 3000
