@@ -30,26 +30,24 @@ export default function Home() {
   
   const toggle = async ( pin ) => {
     const { data } = await RaspberryApi.togglePin(pin);
-    // setPins( data.pins );
     socket.emit("update");
   }
   
   const toggleAll = async ( isActive ) => {
     const { data } = await RaspberryApi.toggleAll( isActive );
-    // setPins( data.pins );
     socket.emit("update");
   }
 
   return (
     <div className="container">
       <Head>
-        <title>Lampi</title>
+        <title>lamPIe</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
         <h1 className="title">
-          Lampi
+          lamPIe
         </h1>
         <Error error={ error } />
         <Loader isShowing={ loading } />
