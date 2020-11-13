@@ -5,28 +5,29 @@ import Section from "../components/Section";
 import Error from "../components/Error";
 import Loader from "../components/Loader";
 import RaspberryApi from "../api/raspberry";
+import useSWR from 'swr'
 
-const { NEXT_PUBLIC_API_ENDPOINT } = process.env;
-// const ENDPOINT = `${NEXT_PUBLIC_API_ENDPOINT}`;
 const ENDPOINT = `http://localhost:3002`;
 
 export default function Home() {
-  const [ pins, setPins ] = useState( [] );
-  const [ error, setError ] = useState("");
-  const [ loading, setLoading ] = useState( true );
-  const socket = socketIOClient(ENDPOINT);
-
-  
-  useEffect( () => {
-    async function fetchData() {
-      const { data, error: e } = await RaspberryApi.getRpi();
-      setLoading( false );
-      setError( e );
-      setPins( data.pins );
-    }
-    socket.on("update", () => fetchData());
-    fetchData();
-  }, [] );
+    const [ pins, setPins ] = useState( [] );
+    const [ error, setError ] = useState("");
+    const [ loading, setLoading ] = useState( true );
+    const socket = socketIOClient(ENDPOINT);
+    
+    useEffect( () => {
+      async function fetchData() {
+        const { data, error: e } = await RaspberryApi.getRpi();
+        // const { data, error: e } = await fetch("/api/rpi").then(r=>r.json());
+        setLoading( data ? false : true );
+        setError( e );
+        // debugger
+        // console.log(f)
+        setPins(data.pins);
+      }
+      socket.on("update", () => fetchData());
+      fetchData();
+    }, [] );
   
   const toggle = async ( pin ) => {
     const { data } = await RaspberryApi.togglePin(pin);
@@ -39,7 +40,7 @@ export default function Home() {
   }
 
   return (
-    <div className="container">
+    <div data-testid="main-container" className="container">
       <Head>
         <title>lamPIe</title>
         <link rel="icon" href="/favicon.ico" />

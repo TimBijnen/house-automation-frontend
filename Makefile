@@ -7,6 +7,9 @@ port=3000
 run:
 	npm run dev
 
+test:
+	npm run test
+
 start:
 	docker run --publish $(port):$(port) --detach --name $(sname) $(name)
 

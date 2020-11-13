@@ -3,9 +3,7 @@ import App from "../pages/index";
 
 describe("App", () => {
   it("renders without crashing", () => {
-    render(<App />);
-    // expect(
-    //   screen.getByRole("heading", { name: "Welcome to Next.js!" })
-    // ).toBeInTheDocument();
+    const { getByTestId } = render(<App />);
+    expect( getByTestId("main-container") ).toBeInTheDocument();
   });
 });
