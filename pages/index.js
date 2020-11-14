@@ -11,26 +11,26 @@ import useSWR from 'swr'
 const ENDPOINT = `ws://localhost:3002`;
 
 export default function Home() {
+    const socket = socketIOClient(ENDPOINT);
     const [ pins, setPins ] = useState( [] );
     const [ error, setError ] = useState("");
     const [ loading, setLoading ] = useState( true );
-    const socket = socketIOClient(ENDPOINT);
     
     async function fetchData() {
-        const { data, error: e } = await RaspberryApi.getRpi();
-        setLoading( false );
-        if (data) {
-            setPins(data.pins);
-        } else if (e ) {
-            setError( e );
+        try {
+            const { data, error: e } = await RaspberryApi.getRpi();
+            setLoading( false );
+            data && setPins(data.pins);
+            e && setError( e );
+        } catch (e ) {
+            setError( e )
         }
     }
-
-    socket.on("update", () => { fetchData() });
 
     useEffect( () => {
         setLoading( true );
         fetchData();
+        socket.on("update", fetchData );
     }, [] );
   
     const toggle = async ( pin ) => {

@@ -12,12 +12,12 @@ const DATA = [
     { data : { pins: [ {name: "test2"} ] } }
 ]
 
-let server
 
 const { NEXT_PUBLIC_API_ENDPOINT } = process.env;
 
 describe("App", () => {
     let socket;
+    let server;
     
     beforeEach(() => {
         server = createServer()
@@ -50,25 +50,28 @@ describe("App", () => {
     
     it("Renders an error if it is returned from the API call", async () => {
         render(<App />);
-        server.shutdown();
         await waitFor(() => expect( screen.getByTestId("error") ).toBeInTheDocument());
     });
-});
 
-
-describe("Error handling", () => {
-    beforeEach(() => {
-        server = createServer()
-        server.logging = false;
-    });
-    
-    afterEach(() => {
-        server.shutdown();
-    });
-    
-    it("Renders an error if it is returned from the API call", async () => {
+    it("Renders an error if the server can't be reached", async () => {
         render(<App />);
+        server.shutdown();
         await waitFor(() => expect( screen.getByTestId("error") ).toBeInTheDocument());
     });
+
+    it("Renders an error if it is can't handle returned data", async () => {
+        server.get(`${ NEXT_PUBLIC_API_ENDPOINT }/rpi`, () => null )
+        render(<App />);
+        server.shutdown();
+        await waitFor(() => expect( screen.getByTestId("error") ).toBeInTheDocument());
+    });
+
+    // it("Renders an error if it is can't handle returned data", async () => {
+    //     server.get(`${ NEXT_PUBLIC_API_ENDPOINT }/rpi`, () => null )
+    //     render(<App />);
+    //     server.shutdown();
+    //     await waitFor(() => expect( screen.getByTestId("error") ).toBeInTheDocument());
+    // });
 });
+
 
