@@ -1,6 +1,9 @@
+export const abortController = new AbortController();
+const {signal} = abortController;
+
 const { NEXT_PUBLIC_API_ENDPOINT } = process.env;
 
-const fetcher = (url, options) => fetch(url, options).then((res) => res.json()).catch(error => ({error}));
+const fetcher = (url, options) => fetch(url, { ...options, signal } ).then((res) => res.json()).catch(error => ({error}));
 
 const getRpi = () => fetcher(`${ NEXT_PUBLIC_API_ENDPOINT }/rpi/`)
 

@@ -4,10 +4,11 @@ import socketIOClient from "socket.io-client";
 import Section from "../components/Section";
 import Error from "../components/Error";
 import Loader from "../components/Loader";
-import RaspberryApi from "../api/raspberry";
+import RaspberryApi, { abortController } from "../api/raspberry";
 import useSWR from 'swr'
 
-const ENDPOINT = `http://localhost:3002`;
+
+const ENDPOINT = `ws://localhost:3002`;
 
 export default function Home() {
     const [ pins, setPins ] = useState( [] );
@@ -15,18 +16,21 @@ export default function Home() {
     const [ loading, setLoading ] = useState( true );
     const socket = socketIOClient(ENDPOINT);
     
-    useEffect( () => {
-        async function fetchData() {
-            const { data, error: e } = await RaspberryApi.getRpi();
-            // const { data, error: e } = await fetch("/api/rpi").then(r=>r.json());
-            setLoading( data ? false : true );
-            setError( e );
-            // debugger
-            // console.log(f)
+    async function fetchData() {
+        const { data, error: e } = await RaspberryApi.getRpi();
+        setLoading( false );
+        if (data) {
             setPins(data.pins);
+        } else if (e ) {
+            setError( e );
         }
-      socket.on("update", () => fetchData());
-      fetchData();
+    }
+
+    socket.on("update", () => { fetchData() });
+
+    useEffect( () => {
+        setLoading( true );
+        fetchData();
     }, [] );
   
     const toggle = async ( pin ) => {

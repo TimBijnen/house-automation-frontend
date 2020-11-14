@@ -7,7 +7,7 @@ const Section = ( { title, pins, toggle, toggleAll } ) => {
     const isAllDeactivated = pins.filter( ( { isActive } ) => isActive ).length === 0;
 
     return (
-        <div className="section">
+        <div data-testid="section" className="section">
             <div className="section-title">
                 <h1>
                     { title }
@@ -18,7 +18,7 @@ const Section = ( { title, pins, toggle, toggleAll } ) => {
             </div>
             <div className="section-buttons">
                 { pins.map( pin => (
-                    <Button className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
+                    <Button key={pin.name} className={ pin.isActive && "active" } onClick={ () => toggle( pin ) }>
                         { pin.name } { pin.isActive ? "uitschakelen" : "inschakelen" }
                     </Button>
                 ) ) }
