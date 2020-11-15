@@ -31,3 +31,12 @@ build: ## Build
 #: clean docker container
 clean: ## Clean
 	docker rm --force $(SHORT_NAME)
+
+
+#: create new tmux session
+tmux-session:
+	tmux new -s ${NAME}
+
+#: attach to existing tmux session
+tmux-attach:
+	tmux a -t ${NAME}
