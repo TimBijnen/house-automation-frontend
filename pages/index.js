@@ -35,11 +35,13 @@ export default function Home() {
   
     const toggle = async ( pin ) => {
         const { data } = await RaspberryApi.togglePin(pin);
+        data && setPins( data.pins );
         socket.emit("update");
     }
     
     const toggleAll = async ( isActive ) => {
         const { data } = await RaspberryApi.toggleAll( isActive );
+        data && setPins( data.pins );
         socket.emit("update");
     }
 
